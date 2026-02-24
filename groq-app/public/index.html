@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Groq AI Chat</title>
+</head>
+<body>
+
+  <h2>Groq Chatbot</h2>
+
+  <input type="text" id="userInput" placeholder="Ask something..." />
+  <button onclick="sendMessage()">Send</button>
+
+  <p><strong>Response:</strong></p>
+  <div id="response"></div>
+
+  <script>
+    async function sendMessage() {
+      const message = document.getElementById("userInput").value;
+
+      const response = await fetch("http://localhost:3000/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ message })
+      });
+
+      const data = await response.json();
+      document.getElementById("response").innerText = data.reply;
+    }
+  </script>
+
+</body>
+</html>
