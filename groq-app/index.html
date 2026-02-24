@@ -4,9 +4,40 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>groq-app</title>
-  </head>
-  <body>
+  <title>Groq AI Chat</title>
+</head>
+<body>
+
+  <h2>Groq Chatbot</h2>
+
+  <form id="coachForm">
+  <input name="goal" placeholder="What is your goal?" />
+  <input name="level" placeholder="Beginner / Intermediate / Advanced" />
+  <input name="days" placeholder="How many days per week?" />
+  <input name="time" placeholder="Minutes per session?" />
+  <button type="submit">Generate Program</button>
+  </form>
+
+  <p><strong>Response:</strong></p>
+  <div id="response"></div>
+
+  <script>
+    async function sendMessage() {
+      const message = document.getElementById("userInput").value;
+
+      const response = await fetch("http://localhost:3000/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ message })
+      });
+
+      const data = await response.json();
+      document.getElementById("response").innerText = data.reply;
+    }
+  </script>
+
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>

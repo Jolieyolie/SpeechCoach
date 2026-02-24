@@ -19,7 +19,7 @@ app.post("/chat", async (req, res) => {
     const { message } = req.body;
 
     const completion = await client.chat.completions.create({
-      model: "llama3-8b-8192",
+      model: "groq/compound-mini",
       messages: [
         { role: "system", content: "You are a helpful assistant." },
         { role: "user", content: message }
@@ -39,4 +39,42 @@ app.post("/chat", async (req, res) => {
 
 app.listen(3000, () => {
   console.log("Server running at http://localhost:3000");
+});
+
+// This function sends the input of the form to the llm service
+app.post("/generate", async (req, res) => {
+  try {
+    const { goal, level, days, time } = req.body;
+
+    const prompt = `
+You are a professional coach.
+
+Create a detailed weekly training program.
+
+User details:
+- Goal: ${goal}
+- Level: ${level}
+- Days per week: ${days}
+- Minutes per session: ${time}
+
+Return:
+1. Weekly schedule (Monday–Sunday)
+2. Clear daily breakdown
+3. Bullet points
+4. Keep it structured and clean
+`;
+
+    const completion = await client.chat.completions.create({
+      model: "groq/compound-mini",
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.7
+    });
+
+    res.json({
+      program: completion.choices[0].message.content
+    });
+
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });

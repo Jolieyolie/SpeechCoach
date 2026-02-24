@@ -7,8 +7,13 @@
 
   <h2>Groq Chatbot</h2>
 
-  <input type="text" id="userInput" placeholder="Ask something..." />
-  <button onclick="sendMessage()">Send</button>
+  <form id="coachForm">
+  <input name="goal" placeholder="What is your goal?" />
+  <input name="level" placeholder="Beginner / Intermediate / Advanced" />
+  <input name="days" placeholder="How many days per week?" />
+  <input name="time" placeholder="Minutes per session?" />
+  <button type="submit">Generate Program</button>
+  </form>
 
   <p><strong>Response:</strong></p>
   <div id="response"></div>
