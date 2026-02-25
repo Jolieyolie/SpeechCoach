@@ -1,1 +1,64 @@
 @import "tailwindcss";
+
+#chat-container {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+}
+
+#messages {
+  min-height: 200px;
+  max-height: 300px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #f9f9f9;
+}
+
+.ai-message {
+  background: #e3f2fd;
+  padding: 10px;
+  border-radius: 8px;
+  margin: 8px 0;
+}
+
+.user-message {
+  background: #c8e6c9;
+  padding: 10px;
+  border-radius: 8px;
+  margin: 8px 0;
+  text-align: right;
+}
+
+#question-text {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+#user-input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+#next-btn {
+  margin-top: 10px;
+}
+
+#result-container {
+  margin-top: 20px;
+  padding: 15px;
+  border: 2px solid #4caf50;
+  border-radius: 8px;
+  background: #e8f5e9;
+}
+
+#result {
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
