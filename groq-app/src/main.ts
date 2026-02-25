@@ -39,7 +39,6 @@ let currentQuestionIndex = 0;
 const answers: Record<string, string> = {};
 
 const messagesDiv = document.getElementById("messages") as HTMLDivElement;
-const questionText = document.getElementById("question-text") as HTMLDivElement;
 const optionsContainer = document.getElementById("options-container") as HTMLDivElement;
 const userInput = document.getElementById("user-input") as HTMLInputElement;
 const nextBtn = document.getElementById("next-btn") as HTMLButtonElement;
@@ -49,24 +48,35 @@ const resultDiv = document.getElementById("result") as HTMLDivElement;
 
 function showQuestion() {
   const question = questions[currentQuestionIndex];
-  questionText.innerText = `Question ${question.id}: ${question.text}`;
   userInput.value = "";
   optionsContainer.innerHTML = "";
   
+  addMessage(question.text, false);
+  
   if (question.options) {
     userInput.style.display = "none";
+    nextBtn.style.display = "none";
     question.options.forEach(opt => {
       const btn = document.createElement("button");
       btn.innerText = opt.label;
-      btn.className = "block w-full text-left px-4 py-2 mb-2 border rounded hover:bg-gray-100";
+      btn.className = "option-btn";
       btn.onclick = () => {
         answers[question.key] = opt.value;
         if (opt.value === "other") {
           userInput.style.display = "block";
           userInput.placeholder = "Please specify...";
           userInput.focus();
+          nextBtn.style.display = "block";
         } else {
-          handleNext();
+          addMessage(opt.label, true);
+          setTimeout(() => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex >= questions.length) {
+              showConfirmation();
+            } else {
+              showQuestion();
+            }
+          }, 300);
         }
       };
       optionsContainer.appendChild(btn);
@@ -74,6 +84,7 @@ function showQuestion() {
   } else {
     userInput.style.display = "block";
     userInput.placeholder = "Type your answer...";
+    nextBtn.style.display = "block";
     userInput.focus();
   }
 }
@@ -81,32 +92,68 @@ function showQuestion() {
 function addMessage(text: string, isUser: boolean) {
   const msg = document.createElement("div");
   msg.className = isUser ? "user-message" : "ai-message";
-  msg.innerText = isUser ? `You: ${text}` : text;
+  msg.innerText = text;
   messagesDiv.appendChild(msg);
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
 function handleNext() {
   const question = questions[currentQuestionIndex];
-  
-  if (!question.options) {
-    const value = userInput.value.trim();
-    if (!value) return;
-    answers[question.key] = value;
-    addMessage(value, true);
-  }
+  const value = userInput.value.trim();
+  if (!value) return;
+  answers[question.key] = value;
+  addMessage(value, true);
   
   currentQuestionIndex++;
   
   if (currentQuestionIndex >= questions.length) {
-    submitToServer();
+    showConfirmation();
   } else {
-    showQuestion();
+    setTimeout(showQuestion, 300);
   }
 }
 
-async function submitToServer() {
+function showConfirmation() {
   inputArea.style.display = "none";
+  
+  const summary = `Here's a summary of your responses:\n\n` +
+    `Goal: ${answers.goal || 'Not specified'}\n` +
+    `Event Date: ${answers.eventDate || 'Not specified'}\n` +
+    `Using Screen: ${answers.hasScreen || 'Not specified'}\n` +
+    `Context: ${answers.context || 'Not specified'}\n` +
+    `Audience Size: ${answers.audienceSize || 'Not specified'}\n\n` +
+    `Would you like me to generate your personalized program?`;
+  
+  addMessage(summary, false);
+  
+  const btnContainer = document.createElement("div");
+  btnContainer.className = "confirmation-buttons";
+  
+  const yesBtn = document.createElement("button");
+  yesBtn.innerText = "Yes, generate my program";
+  yesBtn.className = "yes-btn";
+  yesBtn.onclick = () => submitToServer();
+  
+  const editBtn = document.createElement("button");
+  editBtn.innerText = "Edit my answers";
+  editBtn.className = "edit-btn";
+  editBtn.onclick = () => {
+    currentQuestionIndex = 0;
+    inputArea.style.display = "block";
+    messagesDiv.innerHTML = "";
+    showQuestion();
+  };
+  
+  btnContainer.appendChild(yesBtn);
+  btnContainer.appendChild(editBtn);
+  messagesDiv.appendChild(btnContainer);
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+async function submitToServer() {
+  const buttons = document.querySelector(".confirmation-buttons");
+  if (buttons) buttons.remove();
+  
   messagesDiv.innerHTML += `<div class="ai-message">Generating your personalized program...</div>`;
   
   try {
@@ -137,4 +184,6 @@ userInput.addEventListener("keypress", (e) => {
   }
 });
 
-showQuestion();
+addMessage("Welcome! This app helps you prepare for an upcoming event where you will be speaking in front of other people.", false);
+
+setTimeout(showQuestion, 500);

@@ -1,23 +1,19 @@
 <!doctype html>
 <html>
   <head>
-    <title>Speech Coach - AI Assistant</title>
+    <title>Your Speaking Coach</title>
   </head>
   <body>
-    <h2>Your speech coach assistant</h2>
-    <p>
-      Welcome! This app helps you prepare for an upcoming event where you will
-      be speaking in front of other people.
-    </p>
-    
     <div id="chat-container">
+      <div id="header">
+        <h1>Your Speaking Coach</h1>
+      </div>
       <div id="messages"></div>
       
       <div id="input-area">
-        <div id="question-text"></div>
         <div id="options-container"></div>
         <input type="text" id="user-input" placeholder="Type your answer..." />
-        <button id="next-btn" class="bg-blue-300 active:bg-blue-500 text-white px-4 py-2 rounded">Continue</button>
+        <button id="next-btn">Continue</button>
       </div>
       
       <div id="result-container" style="display: none;">
