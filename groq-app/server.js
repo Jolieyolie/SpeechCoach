@@ -2,7 +2,7 @@ import express from "express";
 import OpenAI from "openai";
 import dotenv from "dotenv";
 import cors from "cors";
-import { SYSTEM } from "./systemPolicy";
+import { SYSTEM } from "./systemPolicy.js";
 
 dotenv.config();
 
