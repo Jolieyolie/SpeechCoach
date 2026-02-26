@@ -288,35 +288,27 @@ function renderCoursePage() {
   Object.keys(PROGRAMME_LOGIC).forEach((context) => {
     const contextData = PROGRAMME_LOGIC[context];
 
-    const slidesSection = document.createElement("div");
-    slidesSection.className = "course-section";
+    const allItems = new Set([
+      ...contextData.slides.small_audience,
+      ...contextData.slides.large_audience,
+      ...contextData.no_slides.small_audience,
+      ...contextData.no_slides.large_audience,
+    ]);
 
-    const slidesTitle = document.createElement("h3");
-    slidesTitle.className = "course-section-title";
-    slidesTitle.textContent = `${context.charAt(0).toUpperCase() + context.slice(1)} - With Slides`;
-    slidesSection.appendChild(slidesTitle);
+    const section = document.createElement("div");
+    section.className = "course-section";
 
-    contextData.slides.small_audience.forEach((item: string) => {
+    const title = document.createElement("h3");
+    title.className = "course-section-title";
+    title.textContent = context.charAt(0).toUpperCase() + context.slice(1);
+    section.appendChild(title);
+
+    allItems.forEach((item: string) => {
       const card = createCourseItem(item);
-      slidesSection.appendChild(card);
+      section.appendChild(card);
     });
 
-    courseContainer.appendChild(slidesSection);
-
-    const noSlidesSection = document.createElement("div");
-    noSlidesSection.className = "course-section";
-
-    const noSlidesTitle = document.createElement("h3");
-    noSlidesTitle.className = "course-section-title";
-    noSlidesTitle.textContent = `${context.charAt(0).toUpperCase() + context.slice(1)} - No Slides`;
-    noSlidesSection.appendChild(noSlidesTitle);
-
-    contextData.no_slides.small_audience.forEach((item: string) => {
-      const card = createCourseItem(item);
-      noSlidesSection.appendChild(card);
-    });
-
-    courseContainer.appendChild(noSlidesSection);
+    courseContainer.appendChild(section);
   });
 }
 
