@@ -368,6 +368,7 @@ const startOverBtn = document.getElementById(
 function startOver() {
   Object.keys(answers).forEach((key) => delete answers[key]);
   currentQuestionIndex = 0;
+  irrelevantAnswerCount = 0;
   messagesDiv.innerHTML = "";
   inputArea.style.display = "block";
 
@@ -497,10 +498,80 @@ function addMessage(text: string, isUser: boolean) {
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
+function isRelevantAnswer(questionId: number, answer: string): boolean {
+  const lowerAnswer = answer.toLowerCase().trim().replace(/['"]/g, '');
+  
+  const vaguePatterns = [
+    'hello', 'hi', 'hey', 'how are you', 'what are you', 'who are you',
+    'test', 'testing', 'ok', 'okay', 'yes', 'no', 'maybe', 'i dont know',
+    'i dont no', 'dont know', 'dont no', 'do not know', 'no idea',
+    'idk', 'whatever', 'anything', 'not sure', 'unsure', 'just', 'general',
+    'improving', 'exploring', 'getting better', 'better', 'help', 'please',
+    'thanks', 'thank you', 'sorry', 'greetings', 'good morning', 'good afternoon',
+    'good evening', 'nice', 'cool', 'alright', 'alrighty', 'sure', 'yep', 'nope',
+    'yeah', 'nah', 'yay', 'okay cool', 'ok cool', 'haha', 'lol', 'lmao',
+    'not really', 'sort of', 'kinda', 'kind of', 'somewhat', 'a bit'
+  ];
+  
+  const containsVague = vaguePatterns.some(p => lowerAnswer.includes(p));
+  if (containsVague) return false;
+  
+  if (questionId === 1) {
+    if (lowerAnswer.length < 5) return false;
+  }
+  
+  if (questionId === 2) {
+    const noEventPatterns = [
+      'no event', 'not yet', 'not have', 'dont have', "don't have",
+      'no specific', 'no concrete', 'just', 'general', 'improving',
+      'exploring', 'learning', 'not sure', 'unsure', 'nothing'
+    ];
+    if (noEventPatterns.some(p => lowerAnswer.includes(p))) {
+      return false;
+    }
+  }
+
+  if (questionId === 3) {
+    if (lowerAnswer.length < 2) return false;
+  }
+  
+  if (questionId === 5) {
+    if (!/\d/.test(lowerAnswer)) return false;
+  }
+  
+  return true;
+}
+
+let irrelevantAnswerCount = 0;
+
 function handleNext() {
   const question = questions[currentQuestionIndex];
   const value = userInput.value.trim();
   if (!value) return;
+  
+  if (!isRelevantAnswer(question.id, value)) {
+    irrelevantAnswerCount++;
+    
+    if (irrelevantAnswerCount >= 2) {
+      addMessage(value, true);
+      inputArea.style.display = "none";
+      addMessage(
+        "It seems you're having trouble providing specific details. That's okay! You can still get started with our free one-day trial to explore the app and access the main course menu. This will help you discover how we can support your speaking journey!",
+        false
+      );
+      irrelevantAnswerCount = 0;
+      return;
+    }
+    
+    addMessage(value, true);
+    const promptMessage = "I want to make sure I find the best solution for you. Could you please answer the question as best as you can? Even a rough idea helps me tailor a programme to your needs.";
+    addMessage(promptMessage, false);
+    userInput.value = "";
+    userInput.focus();
+    return;
+  }
+  
+  irrelevantAnswerCount = 0;
   answers[question.key] = value;
   addMessage(value, true);
 
